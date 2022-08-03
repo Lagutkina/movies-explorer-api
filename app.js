@@ -18,14 +18,15 @@ const { PORT = 3000, DB_URL, NODE_ENV } = process.env;
 mongoose.connect(NODE_ENV === 'production' ? DB_URL : DEV_DB_URL); // подключаемся к  БД
 
 const app = express(); // заводим сервер
-app.use(limiter);
-app.use(helmet());
+app.use(requestLogger); // логер запросов
+
+app.use(limiter); // подключаем лимитер
+app.use(helmet()); // подключаем суперзащиту
 
 app.use(bodyParser.urlencoded({ extended: false })); // express понимает JSON запросы
 app.use(bodyParser.json()); // express понимает JSON запросы
 
 app.use(cors); // cors миддлвара
-app.use(requestLogger); // логер запросов
 
 app.use(routes); // роуты всех страничек
 

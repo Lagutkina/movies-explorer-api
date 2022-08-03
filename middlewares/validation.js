@@ -6,15 +6,29 @@ const { wrongDataValidationErrorMessage } = require('../constants/errors-message
 module.exports.createUserValidation = celebrate({
   body: Joi.object().keys({
     name: Joi.string().required().min(2).max(30),
-    email: Joi.string().required(),
+    email: Joi.string()
+      .required()
+      .custom((value, helpers) => {
+        if (validator.isEmail(value)) {
+          return value;
+        }
+        return helpers.message(wrongDataValidationErrorMessage);
+      }),
     password: Joi.string().required().min(6),
   }),
 });
 
 module.exports.updateUserValidation = celebrate({
   body: Joi.object().keys({
-    name: Joi.string().min(2).max(30),
-    email: Joi.string().required(),
+    name: Joi.string().min(2).max(30).required(),
+    email: Joi.string()
+      .required()
+      .custom((value, helpers) => {
+        if (validator.isEmail(value)) {
+          return value;
+        }
+        return helpers.message(wrongDataValidationErrorMessage);
+      }),
   }),
 });
 
@@ -59,7 +73,7 @@ module.exports.createMovieValidation = celebrate({
         }
         return helpers.message(wrongDataValidationErrorMessage);
       }),
-    movieId: Joi.string().required(),
+    movieId: Joi.number().required(),
     nameRU: Joi.string().required(),
     nameEN: Joi.string().required(),
   }),

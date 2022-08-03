@@ -3,7 +3,7 @@ const UnauthorizedError = require('../errors/unauthorized-err');
 
 const { NODE_ENV, JWT_SECRET } = process.env;
 const { DEV_JWT_SECRET } = require('../constants/dev');
-const unauthorizedErrorMessage = require('../constants/errors-messages');
+const { unauthorizedErrorMessage } = require('../constants/errors-messages');
 
 module.exports = (req, res, next) => {
   const { authorization } = req.headers;

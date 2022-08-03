@@ -11,12 +11,14 @@ const NotFoundError = require('../errors/not-found-err');
 const { pageNotFoundErrorMessage } = require('../constants/errors-messages');
 
 router.post('/signin', loginValidation, login); // роут логина
+
 router.post('/signup', createUserValidation, createUser); // роут регистрации
 
-// авторизация
-router.use('/users', auth, users); // подключение роута для users
+router.use(auth);// авторизация
 
-router.use('/movies', auth, movies); // подключение роута для cards
+router.use('/users', users); // подключение роута для users
+
+router.use('/movies', movies); // подключение роута для cards
 
 router.use('/', (req, res, next) => {
   next(new NotFoundError(pageNotFoundErrorMessage));

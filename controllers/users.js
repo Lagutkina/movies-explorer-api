@@ -8,6 +8,7 @@ const NotFoundError = require('../errors/not-found-err');
 const BadRequestError = require('../errors/bad-request-err');
 const ConflictError = require('../errors/conflict-err');
 const { badRequestErrorMessage, conflictErrorMessage, userNotFoundErrorMessage } = require('../constants/errors-messages');
+const { DEV_JWT_SECRET } = require('../constants/dev');
 
 const { NODE_ENV, JWT_SECRET } = process.env; // добавляем среду
 
@@ -19,13 +20,6 @@ module.exports.getCurrentUser = (req, res, next) => {
         throw new NotFoundError(userNotFoundErrorMessage);
       } else {
         res.send(user);
-      }
-    })
-    .catch((err) => {
-      if (err.name === 'CastError' || err.name === 'ValidationError') {
-        throw new BadRequestError(badRequestErrorMessage);
-      } else {
-        throw err;
       }
     })
     .catch(next);
@@ -49,6 +43,8 @@ module.exports.updateUser = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'CastError' || err.name === 'ValidationError') {
         throw new BadRequestError(badRequestErrorMessage);
+      } else if (err.name === 'MongoServerError' && err.code === 11000) {
+        throw new ConflictError(conflictErrorMessage);
       } else {
         throw err;
       }
@@ -69,11 +65,11 @@ module.exports.createUser = (req, res, next) => {
       email,
       password: hash,
     }))
-    .then((user) => res.send(user))
+    .then((user) => res.send({ name: user.name, email: user.email, _id: user._id }))
     .catch((err) => {
       if (err.name === 'CastError' || err.name === 'ValidationError') {
         throw new BadRequestError(badRequestErrorMessage);
-      } else if (err.code === 11000) {
+      } else if (err.name === 'MongoServerError' && err.code === 11000) {
         throw new ConflictError(conflictErrorMessage);
       } else {
         throw err;
@@ -90,7 +86,7 @@ module.exports.login = (req, res, next) => {
     .then((user) => {
       const token = jwt.sign(
         { _id: user._id },
-        NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret',
+        NODE_ENV === 'production' ? JWT_SECRET : DEV_JWT_SECRET,
         {
           expiresIn: '7d',
         },
