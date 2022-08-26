@@ -12,6 +12,15 @@ const { DEV_JWT_SECRET } = require('../constants/dev');
 
 const { NODE_ENV, JWT_SECRET } = process.env; // добавляем среду
 
+// подписываем JWT токен
+const signJWT = (userId) => jwt.sign(
+  { _id: userId },
+  NODE_ENV === 'production' ? JWT_SECRET : DEV_JWT_SECRET,
+  {
+    expiresIn: '7d',
+  },
+);
+
 // возвращаем информацию о текущем пользователе
 module.exports.getCurrentUser = (req, res, next) => {
   User.findById(req.user._id)
@@ -65,7 +74,12 @@ module.exports.createUser = (req, res, next) => {
       email,
       password: hash,
     }))
-    .then((user) => res.send({ name: user.name, email: user.email, _id: user._id }))
+    .then((user) => {
+      const token = signJWT(user._id);
+      res.send({
+        token, name: user.name, email: user.email, _id: user._id,
+      });
+    })
     .catch((err) => {
       if (err.name === 'CastError' || err.name === 'ValidationError') {
         throw new BadRequestError(badRequestErrorMessage);
@@ -84,16 +98,12 @@ module.exports.login = (req, res, next) => {
 
   return User.findUserByCredentials(email, password)
     .then((user) => {
-      const token = jwt.sign(
-        { _id: user._id },
-        NODE_ENV === 'production' ? JWT_SECRET : DEV_JWT_SECRET,
-        {
-          expiresIn: '7d',
-        },
-      );
+      const token = signJWT(user._id);
 
       // вернём токен
-      res.send({ token });
+      res.send({
+        token, name: user.name, email: user.email, _id: user._id,
+      });
       // аутентификация успешна! вручаем токен пользователю
     })
     .catch(next);

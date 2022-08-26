@@ -21,6 +21,7 @@ module.exports = (req, res, next) => {
     res.header('Access-Control-Allow-Headers', requestHeaders);
     // завершаем обработку запроса и возвращаем результат клиенту
     res.end();
+    return;
   }
   next();
 };

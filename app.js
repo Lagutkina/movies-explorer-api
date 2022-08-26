@@ -13,7 +13,7 @@ const routes = require('./routes/index');
 const { DEV_DB_URL } = require('./constants/dev');
 const { limiter } = require('./middlewares/rateLimit');
 
-const { PORT = 3000, DB_URL, NODE_ENV } = process.env;
+const { PORT = 3002, DB_URL, NODE_ENV } = process.env;
 
 mongoose.connect(NODE_ENV === 'production' ? DB_URL : DEV_DB_URL); // подключаемся к  БД
 
