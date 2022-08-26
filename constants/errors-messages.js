@@ -1,0 +1,10 @@
+module.exports.unauthorizedErrorMessage = 'Необходима авторизация';
+module.exports.badRequestErrorMessage = 'Переданы некорректные данные';
+module.exports.conflictErrorMessage = 'Такой email уже зарегистрирован';
+module.exports.forbiddenErrorMessage = 'Вы не можете удалять чужие фильмы';
+module.exports.movieNotFoundErrorMessage = 'Такой фильм не найден';
+module.exports.userNotFoundErrorMessage = 'Пользователь не найден';
+module.exports.wrongDataNotFoundErrorMessage = 'Неправильные почта или пароль';
+module.exports.pageNotFoundErrorMessage = 'Страница не найдена';
+module.exports.wrongDataValidationErrorMessage = 'Некорректный формат данных';
+module.exports.serverErrorMessage = 'На сервере произошла ошибка';
